@@ -13,7 +13,17 @@ steps:
 - script: echo Hello, world!
   displayName: 'Run a one-line script'
 
-- script: |
+- bash: |
+    if [ -f Maven pom.xml ]; then
+      echo "##vso[task.setVariable variable=FILEEXISTS]true"
+    fi
+- task: Maven@3
+displayName: Maven pom.xml
+condition: eq(variables.FILEEXISTS,'true')
+inputs:
+mavenPOMfile: (Buildparameters.mavenPOMfile)
+options: -Djacoco.percentage.instructions = 0
+
 - task: AzureFunctionApp@2
   inputs:
     connectedServiceNameARM: 'Azure subscription 1(941e3b5d-f4c0-4f20-9474-b94bf83d7d19)'
